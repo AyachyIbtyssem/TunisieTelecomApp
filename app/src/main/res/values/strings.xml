@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Tunisie Telecom App</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="gotomaps">Go To Maps</string>
+    <string name="previous">Previous</string>
+    <string name="home">Home</string>
+    <string name="fab_description">Envoyer un e-mail</string>
+
+    <string name="lorem_ipsum">
+        Welcome to the Tunisie Telecom Kairouan Service Locator 📍\n
+        At Tunisie Telecom, we are committed to providing you with seamless connectivity and exceptional service.\n
+        Our interactive map feature is designed to help you easily locate our service points and stores across Kairouan.\n
+        With just a few taps, you can access a comprehensive list of Tunisie Telecom locations, ensuring that you can find the nearest service center or store to meet your needs.\n
+        Whether you are looking for support, purchasing new products, or simply seeking information, our map feature offers a user friendly experience to enhance your convenience.\n
+        Explore our extensive network and enjoy uninterrupted service with Tunisie Telecom.
+    </string>
+</resources>
