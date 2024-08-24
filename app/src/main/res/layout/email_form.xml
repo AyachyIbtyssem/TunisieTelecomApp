@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="333dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:contentDescription="Logo de Tunisie Telecom"
+        android:src="@drawable/tt" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your email"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black"
+        android:background="@drawable/edit_text_background"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" /> <!-- Augmente la taille minimale -->
+
+    <EditText
+        android:id="@+id/etSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter subject"
+        android:inputType="text"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black"
+        android:background="@drawable/edit_text_background"
+        android:minHeight="48dp" /> <!-- Augmente la taille minimale -->
+
+    <EditText
+        android:id="@+id/etMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter message"
+        android:inputType="textMultiLine"
+        android:minLines="6"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black"
+        android:background="@drawable/edit_text_background"
+        android:maxLines="10"
+        android:minHeight="48dp" /> <!-- Augmente la taille minimale -->
+
+    <Button
+        android:id="@+id/btnSendEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Email"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#3498DB"
+        android:layout_gravity="center" />
+</LinearLayout>

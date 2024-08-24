@@ -6,21 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
-import android.util.Log;
-
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Marker;
-
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "mydatabase.db";
+    private static final String DATABASE_NAME = "your_database.db";
     private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_NAME = "tableName";
-    private static final String COLUMN_SITE_NAME = "SiteName";
-    private static final String COLUMN_GID3 = "GID3";
-    private static final String COLUMN_LAT = "LAT";
-    private static final String COLUMN_LONG = "LONG";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,68 +18,80 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
-                + COLUMN_SITE_NAME + " TEXT, "
-                + COLUMN_GID3 + " TEXT, "
-                + COLUMN_LAT + " REAL, "
-                + COLUMN_LONG + " REAL)";
-        db.execSQL(CREATE_TABLE);
+        // Créer la table si elle n'existe pas
+        db.execSQL("CREATE TABLE IF NOT EXISTS tableName (SiteName TEXT, GID3 TEXT, LAT REAL, LONG REAL)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        // Gérer la mise à jour de la base de données
+        db.execSQL("DROP TABLE IF EXISTS tableName");
         onCreate(db);
     }
 
     public List<Site> getAllSites() {
         List<Site> siteList = new ArrayList<>();
-        SQLiteDatabase db = null;
-        Cursor cursor = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM tableName", null);
 
-        try {
-            db = this.getReadableDatabase();
-            cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int siteNameIndex = cursor.getColumnIndex("SiteName");
+            int gid3Index = cursor.getColumnIndex("GID3");
+            int latIndex = cursor.getColumnIndex("LAT");
+            int lonIndex = cursor.getColumnIndex("LONG");
 
-            if (cursor.moveToFirst()) {
-                // Obtenir les index des colonnes
-                int siteNameIndex = cursor.getColumnIndex(COLUMN_SITE_NAME);
-                int gid3Index = cursor.getColumnIndex(COLUMN_GID3);
-                int latIndex = cursor.getColumnIndex(COLUMN_LAT);
-                int lonIndex = cursor.getColumnIndex(COLUMN_LONG);
+            do {
+                // Check for valid column indexes
+                if (siteNameIndex >= 0 && gid3Index >= 0 && latIndex >= 0 && lonIndex >= 0) {
+                    String siteName = cursor.getString(siteNameIndex);
+                    String gid3 = cursor.getString(gid3Index);
+                    double lat = cursor.getDouble(latIndex);
+                    double lon = cursor.getDouble(lonIndex);
 
-                // Vérifier que les index des colonnes sont valides
-                if (siteNameIndex != -1 && gid3Index != -1 && latIndex != -1 && lonIndex != -1) {
-                    do {
-                        // Récupérer les valeurs des colonnes
-                        String siteName = cursor.getString(siteNameIndex);
-                        String gid3 = cursor.getString(gid3Index);
-                        double lat = cursor.getDouble(latIndex);
-                        double lon = cursor.getDouble(lonIndex);
-
-                        // Créer un objet Site et l'ajouter à la liste
-                        Site site = new Site(siteName, gid3, lat, lon);
-                        siteList.add(site);
-                    } while (cursor.moveToNext());
-                } else {
-                    // Loguer une erreur si les index ne sont pas valides
-                    Log.e("DatabaseHelper", "Les noms de colonnes ne correspondent pas.");
+                    Site site = new Site(siteName, gid3, lat, lon);
+                    siteList.add(site);
                 }
-            }
-        } catch (Exception e) {
-            // Loguer l'exception si une erreur survient
-            Log.e("DatabaseHelper", "Erreur lors de la récupération des sites.", e);
-        } finally {
-            // Fermer le Cursor et la base de données
-            if (cursor != null) {
-                cursor.close();
-            }
-            if (db != null) {
-                db.close();
-            }
-        }
+            } while (cursor.moveToNext());
 
+            cursor.close();
+        }
+        db.close();
         return siteList;
     }
+
+
+    public List<Site> rechercherSiteParNom(String nom) {
+        List<Site> siteList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] columns = {"SiteName", "GID3", "LAT", "LONG"};
+        String selection = "SiteName LIKE ?";
+        String[] selectionArgs = {"%" + nom + "%"};
+
+        Cursor cursor = db.query("tableName", columns, selection, selectionArgs, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int siteNameIndex = cursor.getColumnIndex("SiteName");
+            int latIndex = cursor.getColumnIndex("LAT");
+            int lonIndex = cursor.getColumnIndex("LONG");
+
+            do {
+                // Check for valid column indexes
+                if (siteNameIndex >= 0 && latIndex >= 0 && lonIndex >= 0) {
+                    Site site = new Site();
+                    site.setSiteName(cursor.getString(siteNameIndex));
+                    site.setLatitude(cursor.getDouble(latIndex));
+                    site.setLongitude(cursor.getDouble(lonIndex));
+                    siteList.add(site);
+                }
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        db.close();
+        return siteList;
+    }
+
+
 
 }

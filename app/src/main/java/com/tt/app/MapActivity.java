@@ -1,6 +1,8 @@
 package com.tt.app;
 
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.tt.app.database.DatabaseHelper;
@@ -41,16 +43,31 @@ public class MapActivity extends AppCompatActivity {
 
     private void displaySitesOnMap() {
         List<Site> sites = dbHelper.getAllSites();
+        Log.d("MapActivity", "Nombre de sites récupérés : " + (sites != null ? sites.size() : 0));
 
-        for (Site site : sites) {
-            GeoPoint location = new GeoPoint(site.getLat(), site.getLon());
+        if (sites != null && !sites.isEmpty()) {
+            for (Site site : sites) {
+                Log.d("MapActivity", "Site récupéré : " + site.getSiteName() + " | LAT: " + site.getLatitude() + " | LON: " + site.getLongitude());
 
-            Marker marker = new Marker(mapView);
-            marker.setPosition(location);
-            marker.setTitle(site.getSiteName());
-            marker.setSnippet("GID: " + site.getGid3());
+                if (site.getLatitude() != 0.0 && site.getLongitude() != 0.0) {
+                    Marker marker = new Marker(mapView);
+                    marker.setPosition(new GeoPoint(site.getLatitude(), site.getLongitude()));
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    marker.setTitle(site.getSiteName());
+                    marker.setSnippet("GID: " + site.getGid3());
 
-            mapView.getOverlays().add(marker);
+                    mapView.getOverlays().add(marker);
+                    Log.d("MapActivity", "Marqueur ajouté : " + site.getSiteName());
+                } else {
+                    Log.e("MapActivity", "Coordonnées invalides pour le site : " + site.getSiteName());
+                }
+            }
+        } else {
+            Log.d("MapActivity", "Aucun site trouvé dans la base de données.");
         }
+
+        mapView.invalidate(); // Forcer le rafraîchissement de la carte
     }
+
+
 }
